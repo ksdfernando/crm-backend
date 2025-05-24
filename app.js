@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser'); // ADD THIS
 const userRoutes = require('./routes/user.routes');
 const authRoutes = require('./routes/auth.routes');
+const customerRoutes = require('./routes/customer.routes');
 
 const app = express();
 app.use(cors({
@@ -15,7 +16,8 @@ app.use(cookieParser());
 
 app.use('/api', userRoutes);
 app.use('/api', authRoutes);
-app.listen(3001, () => console.log('Server running on port 5000'));
+app.use('/api', customerRoutes);
+app.listen(3001, () => console.log('Server running on port 3001'));
 
 app.get('/', (req, res) => {
   res.json("CRM Backend Running");
