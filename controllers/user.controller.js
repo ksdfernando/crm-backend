@@ -15,8 +15,11 @@ exports.createUser = async (req, res) => {
 };
 
 exports.getAllUsers = (req, res) => {
-  db.query('SELECT * FROM users', (err, results) => {
-    if (err) return res.status(500).json({ message: 'Error fetching users', error: err.message });
+  const sql = 'SELECT user_id, name, email, role FROM users';
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Database error', error: err.message });
+    }
     res.json(results);
   });
 };

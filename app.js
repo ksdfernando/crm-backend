@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser'); // ADD THIS
 const userRoutes = require('./routes/user.routes');
 const authRoutes = require('./routes/auth.routes');
+const leadRoutes = require('./routes/lead.routes');
 const customerRoutes = require('./routes/customer.routes');
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use('/api', userRoutes);
 app.use('/api', authRoutes);
 app.use('/api', customerRoutes);
+app.use('/api', leadRoutes);
 app.listen(3001, () => console.log('Server running on port 3001'));
 
 app.get('/', (req, res) => {
