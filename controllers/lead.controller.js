@@ -2,7 +2,7 @@ const db = require('../config/db');
 const bcrypt = require('bcrypt');  
 
 exports.createLead = (req, res) => {
-  const { name, email, phone,source,assigned_to,status} = req.body;
+  const { name, email, phone,source,assigned_to,status,interested_in} = req.body;
 
   const sql = `INSERT INTO customers (name, email, phone, status) VALUES (?, ?, ?, ?)`;
   const values = [name, email, phone, 'lead'];
@@ -21,8 +21,8 @@ exports.createLead = (req, res) => {
     }
 
     // insert into leads table
-    const leadSql = `INSERT INTO leads (customer_id, status, source, assigned_to) VALUES (?, ?, ?, ?)`;
-    const leadValues = [customerId, status, source, assigned_to];
+    const leadSql = `INSERT INTO leads (customer_id, status, source, assigned_to,interested_in) VALUES (?, ?, ?, ?,?)`;
+    const leadValues = [customerId, status, source, assigned_to,interested_in];
 
     db.query(leadSql, leadValues, (leadErr, leadResult) => {
       if (leadErr) {
@@ -41,6 +41,8 @@ exports.getMyLeads = (req, res) => {
   const query = `SELECT 
   leads.lead_id,
   leads.status,
+  leads.interested_in,
+  leads.created_at,
   customers.customer_id,
   customers.name,
   customers.email,
@@ -60,3 +62,20 @@ WHERE leads.assigned_to = ?
     return res.json(results);
   });
 };
+
+exports.updateLead = (req, res) => {
+  const leadId = req.params.id;
+  const { status, notes } = req.body;
+
+  const sql = `UPDATE leads SET status = ?, notes = ? WHERE lead_id = ?`;
+
+  db.query(sql, [status, notes, leadId], (err, result) => {
+    if (err) {
+      console.error("❌ Error updating lead:", err);
+      return res.status(500).json({ error: "Failed to update lead" });
+    }
+
+    res.status(200).json({ message: "✅ Lead updated successfully" });
+  });
+};
+
