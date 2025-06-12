@@ -18,3 +18,21 @@ exports.addCustomer = async (req, res) => {
     res.status(201).json({ message: 'Customer added', customerId: result.insertId });
   });
 };
+exports.checkCustomerExists = (req, res) => {
+  const customerId = req.params.customerId;
+
+  const sql = 'SELECT COUNT(*) AS count FROM customers WHERE customer_id = ?';
+
+  db.query(sql, [customerId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error checking customer', error: err.message });
+    }
+
+    const exists = results[0].count > 0;
+    
+    console.log("🔍 Customer exists:", exists);
+    res.json({ exists });
+     
+  });
+};
+

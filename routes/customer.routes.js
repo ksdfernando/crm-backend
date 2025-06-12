@@ -4,4 +4,6 @@ const CustomerController = require('../controllers/customer.controller');
 
 router.post('/customers',CustomerController.addCustomer);
 
+router.get('/customers/:customerId', CustomerController.checkCustomerExists);
+
 module.exports = router;

@@ -63,19 +63,19 @@ WHERE leads.assigned_to = ?
   });
 };
 
-exports.updateLead = (req, res) => {
-  const leadId = req.params.id;
-  const { status, notes } = req.body;
+  exports.updateLead = (req, res) => {
+    const leadId = req.params.id;
+    const { status, notes } = req.body;
 
-  const sql = `UPDATE leads SET status = ?, notes = ? WHERE lead_id = ?`;
+    const sql = `UPDATE leads SET status = ?, notes = ? WHERE lead_id = ?`;
 
-  db.query(sql, [status, notes, leadId], (err, result) => {
-    if (err) {
-      console.error("❌ Error updating lead:", err);
-      return res.status(500).json({ error: "Failed to update lead" });
-    }
+    db.query(sql, [status, notes, leadId], (err, result) => {
+      if (err) {
+        console.error("❌ Error updating lead:", err);
+        return res.status(500).json({ error: "Failed to update lead" });
+      }
 
-    res.status(200).json({ message: "✅ Lead updated successfully" });
-  });
-};
+      res.status(200).json({ message: "✅ Lead updated successfully" });
+    });
+  };
 
