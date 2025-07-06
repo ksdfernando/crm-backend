@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth.routes');
 const leadRoutes = require('./routes/lead.routes');
 const customerRoutes = require('./routes/customer.routes');
 const ticketRoutes = require('./routes/ticket.routes');
+const taskRoutes = require('./routes/task.routes');
 const app = express();
 app.use(cors({
   origin: 'http://localhost:3000', // React app origin
@@ -20,6 +21,7 @@ app.use('/api', authRoutes);
 app.use('/api', customerRoutes);
 app.use('/api', leadRoutes);
 app.use('/api', ticketRoutes);
+app.use('/api', taskRoutes);
 app.listen(3001, () => console.log('Server running on port 3001'));
 
 app.get('/', (req, res) => {
