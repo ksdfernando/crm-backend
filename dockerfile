@@ -1,7 +1,20 @@
-FROM node:20-alpine
+# Use Node.js LTS
+FROM node:18
+
+# Set working directory
 WORKDIR /app
+
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
+
+# Copy rest of the code
 COPY . .
-EXPOSE 3000
-CMD ["node", "server.js"]
+
+# Expose port
+EXPOSE 3001
+
+# Start app
+CMD ["npm", "run", "start"]
