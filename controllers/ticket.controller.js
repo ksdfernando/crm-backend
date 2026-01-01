@@ -1,6 +1,7 @@
 const TicketModel = require('../models/tickets');
 const sendTicketEmail = require('../utils/mailer');
 
+// Create new ticket
 exports.createTicket = (req, res) => {
   const ticketData = req.body;
 
@@ -45,6 +46,7 @@ exports.createTicket = (req, res) => {
   });
 };
 
+// Get tickets assigned to current user
 exports.getMyTickets = (req, res) => {
   const userId = req.params.userId;
 
@@ -58,11 +60,11 @@ exports.getMyTickets = (req, res) => {
   });
 };
 
+// Update ticket (status and/or note)
 exports.updateTicket = (req, res) => {
   const ticketId = req.params.id;
   const { status, update } = req.body;
 
-  // First get current status to check if changed
   TicketModel.getTicketStatus(ticketId, (selectErr, selectResult) => {
     if (selectErr) {
       console.error("Error fetching current status:", selectErr);
@@ -76,8 +78,8 @@ exports.updateTicket = (req, res) => {
     const currentStatus = selectResult[0].status;
 
     if (status && status !== currentStatus) {
-      // status changed
-      TicketModel.updateTicket(ticketId, status, update, (err, result) => {
+      // Status changed
+      TicketModel.updateTicket(ticketId, status, update, (err) => {
         if (err) {
           console.error("Error updating ticket:", err);
           return res.status(500).json({ error: "Failed to update ticket" });
@@ -86,8 +88,8 @@ exports.updateTicket = (req, res) => {
         return res.status(200).json({ message: "Ticket updated successfully" });
       });
     } else {
-      // status same or not provided
-      TicketModel.updateTicket(ticketId, undefined, update, (err, result) => {
+      // Status same or not provided, update only note
+      TicketModel.updateTicket(ticketId, undefined, update, (err) => {
         if (err) {
           console.error("Error updating ticket:", err);
           return res.status(500).json({ error: "Failed to update ticket" });
@@ -99,7 +101,28 @@ exports.updateTicket = (req, res) => {
   });
 };
 
+// ✅ NEW: Get all tickets (optionally filter by status and assigned_to)
+exports.getAllTickets = (req, res) => {
+  const { status, assigned_to } = req.query;
 
+  const filters = {};
+
+  if (status) {
+    filters.status = status.toLowerCase();
+  }
+
+  if (assigned_to) {
+    filters.assigned_to = assigned_to;
+  }
+
+  TicketModel.getAll(filters, (err, results) => {
+    if (err) {
+      console.error("Error fetching all tickets:", err);
+      return res.status(500).json({ error: 'Failed to fetch tickets' });
+    }
+    res.status(200).json(results);
+  });
+};
 
 
 

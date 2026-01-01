@@ -7,7 +7,7 @@ const validateTicket = require('../middlewares/validateTicket');
 router.post('/ticket/create',validateTicket, TicketController.createTicket);
 //  tickets assigned to a specific user
 router.get('/tickets/my-tickets/:userId', TicketController.getMyTickets);
-
+router.get('/tickets', TicketController.getAllTickets);
 // in routes/ticket.routes.js
 router.put('/tickets/update/:id', TicketController.updateTicket);
 

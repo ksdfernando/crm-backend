@@ -9,6 +9,7 @@ const TaskModel = {
     db.query(sql, [title, description, due_date, status, assigned_to], callback);
   },
 
+  
   // Get all tasks with user name
   getAll: (callback) => {
     const sql = `SELECT t.*, u.name AS assigned_user 

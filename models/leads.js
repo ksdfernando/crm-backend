@@ -1,6 +1,31 @@
 const db = require('../config/db');
 
 const LeadModel = {
+
+ getAllLeads: (callback) => {
+  const sql = `
+    SELECT 
+      leads.lead_id,
+      leads.customer_id,
+      leads.status,
+      leads.source,
+      leads.assigned_to,
+      leads.interested_in,
+      leads.notes,
+      leads.created_at,
+      customers.name AS customer_name,
+      customers.email,
+      customers.phone,
+      users.name AS assigned_user_name
+    FROM leads
+    INNER JOIN customers ON leads.customer_id = customers.customer_id
+    LEFT JOIN users ON leads.assigned_to = users.user_id
+    ORDER BY leads.created_at DESC
+  `;
+  db.query(sql, callback);
+},
+
+
  createCustomer: (name, email, phone, callback) => {
   const sql = `INSERT INTO customers (name, email, phone, status) VALUES (?, ?, ?, ?)`;
   db.query(sql, [name, email, phone, 'lead'], (err, result) => {
@@ -38,6 +63,9 @@ createLead: (customerId, status, source, assigned_to, interested_in, callback) =
     const sql = `UPDATE leads SET status = ?, notes = ? WHERE lead_id = ?`;
     db.query(sql, [status, notes, leadId], callback);
   }
+
+  
 };
+
 
 module.exports = LeadModel;

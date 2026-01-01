@@ -1,18 +1,20 @@
-# Backend Dockerfile
-FROM node:18-alpine
+# Use Node.js LTS
+FROM node:18
 
-# Create app directory
-WORKDIR /usr/src/app
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
 # Install dependencies
-COPY package.json package-lock.json ./
-RUN npm install --production
+RUN npm install
 
-# Copy app source
+# Copy rest of the code
 COPY . .
 
-# Expose the port the app runs on
+# Expose port
 EXPOSE 3001
 
-# Command to run the application
-CMD ["node", "server.js"]
+# Start app
+CMD ["npm", "run", "start"]

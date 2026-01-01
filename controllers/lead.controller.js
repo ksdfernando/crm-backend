@@ -24,6 +24,12 @@ exports.getMyLeads = (req, res) => {
     res.json(results);
   });
 };
+exports.getAllLeads = (req, res) => {
+  LeadModel.getAllLeads((err, results) => {
+    if (err) return res.status(500).json({ error: "Failed to fetch leads" });
+    res.json(results);
+  });
+};
 
 exports.updateLead = (req, res) => {
   const leadId = req.params.id;

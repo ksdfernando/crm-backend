@@ -1,6 +1,7 @@
 const db = require('../config/db');
 
 const TicketModel = {
+  // 🔹 Create a new ticket
   createTicket: (ticketData, callback) => {
     const { customer_id, subject, description, status, assigned_to, priority } = ticketData;
 
@@ -19,11 +20,43 @@ const TicketModel = {
     db.query(sql, values, callback);
   },
 
+  // 🔹 Get all tickets (for AllTickets page) with optional filters
+  getAll: (filters, callback) => {
+    let sql = `
+      SELECT 
+        t.*, 
+        c.name, c.email, c.phone, 
+        u.name AS assigned_user 
+      FROM ticket t
+      LEFT JOIN customers c ON t.customer_id = c.customer_id
+      LEFT JOIN users u ON t.assigned_to = u.user_id
+      WHERE 1 = 1
+    `;
+
+    const params = [];
+
+    if (filters.status) {
+      sql += ' AND t.status = ?';
+      params.push(filters.status);
+    }
+
+    if (filters.assigned_to) {
+      sql += ' AND t.assigned_to = ?';
+      params.push(filters.assigned_to);
+    }
+
+    sql += ' ORDER BY t.created_at DESC';
+
+    db.query(sql, params, callback);
+  },
+
+  // 🔹 Get user email by ID
   getUserEmail: (userId, callback) => {
     const sql = `SELECT email FROM users WHERE user_id = ?`;
     db.query(sql, [userId], callback);
   },
 
+  // 🔹 Get all tickets assigned to a specific user
   getTicketsByUser: (userId, callback) => {
     const sql = `
       SELECT 
@@ -49,11 +82,13 @@ const TicketModel = {
     db.query(sql, [userId], callback);
   },
 
+  // 🔹 Get the current status of a ticket
   getTicketStatus: (ticketId, callback) => {
     const sql = `SELECT status FROM ticket WHERE ticket_id = ?`;
     db.query(sql, [ticketId], callback);
   },
 
+  // 🔹 Update ticket status + update_note with corresponding timestamp
   updateTicket: (ticketId, status, updateNote, callback) => {
     let sql;
     const statusLower = status?.toLowerCase();
@@ -67,11 +102,11 @@ const TicketModel = {
     } else if (statusLower === 'closed') {
       sql = `UPDATE ticket SET status = ?, update_note = ?, closed_time = NOW() WHERE ticket_id = ?`;
     } else if (status === undefined) {
-      // status undefined, update only note
+      // Only update the note
       sql = `UPDATE ticket SET update_note = ? WHERE ticket_id = ?`;
       return db.query(sql, [updateNote, ticketId], callback);
     } else {
-      // status unchanged or other status
+      // Default: update both status and note
       sql = `UPDATE ticket SET status = ?, update_note = ? WHERE ticket_id = ?`;
     }
 
